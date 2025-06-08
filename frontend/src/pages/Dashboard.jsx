@@ -3,6 +3,21 @@ import { Link } from 'react-router-dom';
 import TaskManager from '../components/TaskManager';
 
 const Dashboard = () => {
+
+    const role = localStorage.getItem('userRole');
+
+
+    const handleLogout = () => {
+        // Clear the 'token' cookie
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+        // Clear localStorage (optional, but recommended)
+        localStorage.clear();
+
+        // Redirect to login page
+        window.location.href = "/";
+        };
+
   return (
     <div className="min-h-screen ">
       <nav className="bg-gray-800">
@@ -20,10 +35,13 @@ const Dashboard = () => {
                 <div className="ml-10 flex items-baseline space-x-4">
                                     
                     <Link to="/dashboard" className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Dashboard</Link>
-                    <Link to="/signup" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Signup</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Reports</Link>
+                    
+                    {role === 'admin' && (
+                            <Link to="/usermanager" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                            Manage User
+                            </Link>
+                        )}
+                                            
 
 
                 </div>
@@ -80,9 +98,16 @@ const Dashboard = () => {
                     aria-labelledby="user-menu-button"
                     tabIndex="-1"
                   >
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700" role="menuitem">Your Profile</a>
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700" role="menuitem">Settings</a>
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700" role="menuitem">Sign out</a>
+                    <Link to="/signup" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 ">Signup</Link>
+                    
+                     <div>
+                    <button
+                        onClick={handleLogout}
+                        className="px-4 py-2 mt-3 text-sm bg-red-300 text-white rounded hover:bg-red"
+                        >
+                        Logout
+                        </button>
+                        </div>
                   </div>
                 </div>
               </div>
@@ -108,18 +133,19 @@ const Dashboard = () => {
         {/* Mobile menu */}
         <div className="md:hidden" id="mobile-menu">
           <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-            <a href="#" className="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white">Dashboard</a>
-            <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
-            <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
-            <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
-            <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Reports</a>
+            <Link to="/dashboard" className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Dashboard</Link>
+                    
+                    {role === 'admin' && (
+                            <Link to="/usermanager" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                            Manage User
+                            </Link>
+                        )}
           </div>
           <div className="border-t border-gray-700 pt-4 pb-3">
             <div className="flex items-center px-5">
               <img className="size-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e" alt="" />
               <div className="ml-3">
-                <div className="text-base font-medium text-white">Tom Cook</div>
-                <div className="text-sm font-medium text-gray-400">tom@example.com</div>
+                
               </div>
               <button className="ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-hidden focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                 <span className="sr-only">View notifications</span>
@@ -129,8 +155,7 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="mt-3 space-y-1 px-2">
-              <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Your Profile</a>
-              <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Settings</a>
+               <Link to="/signup" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Signup</Link>
               <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Sign out</a>
             </div>
           </div>

@@ -6,10 +6,11 @@ import User from '../models/User.js';
 // Environment variables
 
 import { JWT_SECRET, SALT_ROUNDS } from '../config/config.js';
+import { sendOtpEmail } from '../utils/sendOtp.js';
 
 
 // Helper function to generate JWT token
-const generateToken = (userId) => {
+export const generateToken = (userId) => {
   return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '1h' });
 };
   
@@ -97,63 +98,53 @@ export const loginUser = async (req, res) => {
 
 //Signup
 
+    export const signupUser = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
 
-export const signupUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+        if (!email || !password || !name) {
+        return res.status(400).json({ message: "Name, email, and password are required" });
+        }
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+        if (password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters long" });
+        }
+
+        const emailNormalized = email.toLowerCase();
+        const existingUser = await User.findOne({ email: emailNormalized });
+
+        if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+        // Create inactive user with OTP
+        const user = new User({
+        name,
+        email: emailNormalized,
+        password: hashedPassword,
+        authType: 'manual',
+        role: 'user',
+        isActive: false,
+        otp,
+        otpExpiresAt
+        });
+
+        await user.save();
+        await sendOtpEmail(emailNormalized, otp);
+
+        res.status(200).json({ message: 'OTP sent to email. Please verify to complete signup.' });
+
+    } catch (error) {
+        console.error('Signup error:', error);
+        res.status(500).json({ message: "Signup failed", error: error.message });
     }
-
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters long" });
-    }
-
-    const emailNormalized = email.toLowerCase();
-
-    const existingUser = await User.findOne({ email: emailNormalized });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-
-    const user = new User({
-      name,
-      email: emailNormalized,
-      password: hashedPassword,
-      authType: 'manual',
-      role: 'user',
-
-    });
-
-    await user.save();
-
-    const token = generateToken(user._id);
-
-                res.cookie('token', token, {
-                httpOnly: true,
-                secure: false, // Set to true only in production with HTTPS
-                sameSite: 'Lax',
-                maxAge: 3600000,
-            })
-            .status(201)
-            .json({
-                message: 'Signup successful',
-                user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                authType: user.authType,
-                },
-            });
-
-  } catch (error) {
-    res.status(500).json({ message: "Registration failed", error: error.message });
-  }
-};
+    };
 
 // Update user
 export const updateUser = async (req, res) => {

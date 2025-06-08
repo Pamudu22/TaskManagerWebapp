@@ -1,18 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../services/api";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
-const initialTasks = [
-  {
-    id: 1,
-    title: "Fix bug",
-    description: "Resolve login issue",
-    deadline: "2025-06-12",
-    assignedTo: "Alice",
-    status: "Pending",
-  },
-];
 
 const TaskManager = () => {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState([]);
   const [form, setForm] = useState({
     id: null,
     title: "",
@@ -25,36 +18,100 @@ const TaskManager = () => {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState("title");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (isEditing) {
-      setTasks(tasks.map((task) => (task.id === form.id ? form : task)));
-      setIsEditing(false);
-    } else {
-      setTasks([...tasks, { ...form, id: Date.now() }]);
+  // Fetch all tasks
+  const fetchTasks = async () => {
+    try {
+      const res = await api.get("/task", {
+        params: { search, sortBy: sortKey },
+      });
+      setTasks(res.data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error.message);
     }
-    resetForm();
   };
 
+  useEffect(() => {
+    fetchTasks();
+  }, [search, sortKey]);
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    if (isEditing) {
+      await api.put(`/task/${form.id}`, form);
+    } else {
+      const { id, ...taskData } = form; // ⬅️ Strip out `id`
+      await api.post("/task", taskData);
+    }
+    fetchTasks();
+    resetForm();
+    setIsEditing(false);
+  } catch (err) {
+    console.error("Error saving task:", err.response?.data || err.message);
+  }
+};
+
+
   const resetForm = () => {
-    setForm({ id: null, title: "", description: "", deadline: "", assignedTo: "", status: "Pending" });
+    setForm({
+      id: null,
+      title: "",
+      description: "",
+      deadline: "",
+      assignedTo: "",
+      status: "Pending",
+    });
   };
 
   const handleEdit = (task) => {
-    setForm(task);
-    setIsEditing(true);
+  setForm({
+    id: task._id, 
+    title: task.title,
+    description: task.description,
+    deadline: task.deadline,
+    assignedTo: task.assignedTo,
+    status: task.status,
+  });
+  setIsEditing(true);
+};
+
+
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/task/${id}`);
+      fetchTasks();
+    } catch (err) {
+      console.error("Error deleting task:", err.message);
+    }
   };
 
-  const handleDelete = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
+  const filteredTasks = tasks;
 
-  const filteredTasks = tasks
-    .filter((task) => task.title.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
+  //generate pdf 
+  const generatePDF = () => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("Task List", 14, 20);
+
+  autoTable(doc, {
+    startY: 30,
+    head: [['Title', 'Assigned To', 'Deadline', 'Status']],
+    body: tasks.map(task => [
+      task.title,
+      task.assignedTo || '-',
+      task.deadline ? new Date(task.deadline).toLocaleDateString() : '-',
+      task.status,
+    ]),
+  });
+
+  doc.save("task_list.pdf");
+};
+
 
   return (
-    <div>
+    <div className="p-4">
       {/* Search & Sort */}
       <div className="flex items-center gap-4 mb-4 bg-dark p-4 rounded shadow">
         <input
@@ -106,7 +163,7 @@ const TaskManager = () => {
           >
             <option value="Pending">Pending</option>
             <option value="In Progress">In Progress</option>
-            <option value="Done">Done</option>
+            <option value="Completed">Completed</option>
           </select>
           <textarea
             placeholder="Description"
@@ -141,29 +198,30 @@ const TaskManager = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredTasks.map((task) => (
-              <tr key={task.id} className="hover:bg-dark-50">
-                <td className="px-4 py-2 border">{task.title}</td>
-                <td className="px-4 py-2 border">{task.assignedTo}</td>
-                <td className="px-4 py-2 border">{task.deadline}</td>
-                <td className="px-4 py-2 border">{task.status}</td>
-                <td className="px-4 py-2 border flex gap-2">
-                  <button
-                    onClick={() => handleEdit(task)}
-                    className="px-2 py-1 bg-yellow-400 text-white text-sm rounded"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(task.id)}
-                    className="px-2 py-1 bg-red-500 text-white text-sm rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {filteredTasks.length === 0 && (
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => (
+                <tr key={task._id || task.id} className="hover:bg-dark-50">
+                  <td className="px-4 py-2 border">{task.title}</td>
+                  <td className="px-4 py-2 border">{task.assignedTo}</td>
+                  <td className="px-4 py-2 border">{task.deadline}</td>
+                  <td className="px-4 py-2 border">{task.status}</td>
+                  <td className="px-4 py-2 border flex gap-2">
+                    <button
+                      onClick={() => handleEdit(task)}
+                      className="px-2 py-1 bg-yellow-400 text-white text-sm rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(task._id || task.id)}
+                      className="px-2 py-1 bg-red-500 text-white text-sm rounded"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
                 <td colSpan="5" className="text-center py-4 text-gray-500">
                   No tasks found.
@@ -172,6 +230,17 @@ const TaskManager = () => {
             )}
           </tbody>
         </table>
+
+        {/* pdf download button */}
+        <div className="flex justify-end my-4">
+        <button
+            onClick={generatePDF}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+            Download PDF
+        </button>
+        </div>
+
       </div>
     </div>
   );

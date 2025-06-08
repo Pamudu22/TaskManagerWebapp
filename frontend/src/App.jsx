@@ -1,19 +1,25 @@
 import { Routes, Route } from 'react-router-dom';
+import React from 'react';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
-import OtpVerification from './pages/OtpVerification';
-import Profile from './pages/Profile';
+
+
 import './App.css'; 
+import Usermanager from './pages/Usermanager.jsx';
+import Notfoundpage from './pages/Notfoundpage.jsx';
+import VerifyOtp from './pages/VerifyOtp.jsx';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/verify-otp" element={<OtpVerification />} />
+      <Route path="/verify-otp" element={<VerifyOtp />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/profile" element={<Profile />} />
+      <Route path="/usermanager" element={<Usermanager />} />
+      <Route path="*" element={<Notfoundpage />} />
+      
     </Routes>
    
   );
