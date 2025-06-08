@@ -69,18 +69,31 @@ export const loginUser = async (req, res) => {
     const token = generateToken(user._id);
 
     // 4. Send response
-    res.status(200).json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
+        res.cookie('token', token, {
+        httpOnly: true,
+        secure: false, // Set to true only in production with HTTPS
+        sameSite: 'Lax',
+        maxAge: 3600000, // 1 hour
+        });
+
+        res.status(200).json({
+        message: 'Login successful',
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        }
+        });
+
+
   } catch (error) {
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };
+
+
+
 
 //Signup
 
@@ -119,15 +132,24 @@ export const signupUser = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    res.status(201).json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        authType: user.authType
-      },
-    });
+                res.cookie('token', token, {
+                httpOnly: true,
+                secure: false, // Set to true only in production with HTTPS
+                sameSite: 'Lax',
+                maxAge: 3600000,
+            })
+            .status(201)
+            .json({
+                message: 'Signup successful',
+                user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                authType: user.authType,
+                },
+            });
+
   } catch (error) {
     res.status(500).json({ message: "Registration failed", error: error.message });
   }
