@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import OtpVerification from './pages/OtpVerification';
 import Profile from './pages/Profile';
 import './App.css'; 
+import Usermanager from './pages/Usermanager.jsx';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/verify-otp" element={<OtpVerification />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/usermanager" element={<Usermanager />} />
     </Routes>
    
   );

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import TaskManager from '../components/TaskManager';
 
 const Dashboard = () => {
+    const role = localStorage.getItem('userRole');
   return (
     <div className="min-h-screen ">
       <nav className="bg-gray-800">
@@ -21,10 +22,18 @@ const Dashboard = () => {
                                     
                     <Link to="/dashboard" className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Dashboard</Link>
                     <Link to="/signup" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Signup</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Reports</Link>
-
+                    
+                   {role === 'admin' && (
+                        <Link
+                        to="/usermanager"
+                        className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                        >
+                        Manage User
+                        </Link>
+                    )}
+                    
+                    
+                    
 
                 </div>
               </div>

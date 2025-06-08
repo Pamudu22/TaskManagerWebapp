@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import TaskManager from '../components/TaskManager';
+import UsermanagerComponent from '../components/UsermanagerComponent';
 
 const Usermanager = () => {
   return (
@@ -21,9 +22,7 @@ const Usermanager = () => {
                                     
                     <Link to="/dashboard" className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Dashboard</Link>
                     <Link to="/signup" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Signup</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</Link>
-                    <Link to="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Reports</Link>
+                    
 
 
                 </div>
@@ -145,7 +144,7 @@ const Usermanager = () => {
 
       <main>
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <TaskManager />
+          <UsermanagerComponent />
         </div>
       </main>
     </div>
