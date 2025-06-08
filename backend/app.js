@@ -3,6 +3,9 @@ import { config } from "dotenv";
 import appRouter from "./routes/index.js";
 
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+
+
 
 
 
@@ -15,6 +18,7 @@ app.use(cors({
 
 // middlewares
 app.use(express.json());
+app.use(cookieParser());
 
 // routes
 app.use("/api/v1",appRouter);
