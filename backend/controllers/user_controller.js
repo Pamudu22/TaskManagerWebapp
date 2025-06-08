@@ -29,7 +29,8 @@ export const getUser = async (req, res) => {
 // Get all users
 export const getAllUser = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
+    const users = await User.find({ isActive: true }).select('-password');
+
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve users', error: error.message });
@@ -55,7 +56,10 @@ export const loginUser = async (req, res) => {
 
     // 2. Verify password
     const isMatch = await bcrypt.compare(password, user.password);
-    
+    if (!user.isActive) {
+        return res.status(403).json({ message: 'Account is deactivated' });
+        }
+
 
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -106,7 +110,9 @@ export const signupUser = async (req, res) => {
       name,
       email: emailNormalized,
       password: hashedPassword,
-      authType: 0, 
+      authType: 'manual',
+      role: 'user',
+
     });
 
     await user.save();
@@ -147,14 +153,20 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Delete user
+// Deactivate user
 export const deleteUser = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
-    if (!deletedUser) {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { isActive: false },
+      { new: true }
+    ).select('-password');
+
+    if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(200).json({ message: 'User deleted successfully' });
+
+    res.status(200).json({ message: 'User deactivated successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Delete failed', error: error.message });
   }
