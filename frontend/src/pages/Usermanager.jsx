@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import TaskManager from '../components/TaskManager';
 
-const Dashboard = () => {
+const Usermanager = () => {
   return (
     <div className="min-h-screen ">
       <nav className="bg-gray-800">
@@ -152,4 +152,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Usermanager;
