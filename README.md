@@ -32,7 +32,6 @@ A full-stack task management system with secure authentication, OTP verification
 ## 📁 Project Structure
 
 ```
-
 ├── backend
 │   ├── controllers/
 │   ├── models/
