@@ -31,7 +31,8 @@ A full-stack task management system with secure authentication, OTP verification
 
 ## 📁 Project Structure
 
-```
+<details> <summary>Click to expand code block version</summary>
+
 ├── backend
 │   ├── controllers/
 │   ├── models/
@@ -49,7 +50,7 @@ A full-stack task management system with secure authentication, OTP verification
 │   └── .env
 └── README.md
 
-````
+</details>
 
 ---
 
