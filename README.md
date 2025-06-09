@@ -1,4 +1,3 @@
-Sure! Here's your complete `README.md` content, ready to copy and paste into your project root:
 
 ---
 
@@ -172,11 +171,7 @@ npm run dev
 
 ---
 
-## 📄 License
 
-MIT License
-
----
 
 ## 🙋‍♂️ Author
 
