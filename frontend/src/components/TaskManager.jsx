@@ -203,7 +203,7 @@ const TaskManager = () => {
                 <tr key={task._id || task.id} className="hover:bg-dark-50">
                   <td className="px-4 py-2 border">{task.title}</td>
                   <td className="px-4 py-2 border">{task.assignedTo}</td>
-                  <td className="px-4 py-2 border">{task.deadline}</td>
+                  <td className="px-4 py-2 border">{task.deadline ? new Date(task.deadline).toLocaleDateString():'-'}</td>
                   <td className="px-4 py-2 border">{task.status}</td>
                   <td className="px-4 py-2 border flex gap-2">
                     <button
