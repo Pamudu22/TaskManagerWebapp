@@ -179,10 +179,4 @@ Made with ❤️ by **Pamudu_Wijayabandara** – [GitHub](https://github.com/Pam
 
 ```
 
----
 
-Let me know if you want to:
-- Add **deployment instructions** (e.g., Vercel/Render/MongoDB Atlas)
-- Include **screenshots or badges**
-- Write a **contribution guide or changelog**
-```
